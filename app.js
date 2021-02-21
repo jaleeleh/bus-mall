@@ -56,6 +56,15 @@ function renderThreeImages() {
     leftElement.src = ProductImage.products[leftIndex].source;
     centerElement.src = ProductImage.products[centerIndex].source;
     rightElement.src = ProductImage.products[rightIndex].source;
+    for(let i=0;i<ProductImage.products.length;i++){
+        if(leftIndex==i){
+            ProductImage.products[i].shown++
+        }else if(centerIndex==i){
+            ProductImage.products[i].shown++;
+        }else if(rightIndex==i) {
+            ProductImage.products[i].shown++;}
+
+}
 }
 renderThreeImages()
 //    console.log(ProductImage.products[leftIndex])
@@ -101,7 +110,7 @@ function submitter(event){
     for(let i=0;i<ProductImage.products.length;i++){
         let list=document.createElement('li');
         unorderedList.appendChild(list);
-        list.textContent = ProductImage.products[i].name +  ' has ' + ProductImage.products[i].votes + ' votes';
+        list.textContent = ProductImage.products[i].name +  ' had ' + ProductImage.products[i].votes + ' votes, and was seen  ' + ProductImage.products[i].shown+' times .'
       
       } }
 
