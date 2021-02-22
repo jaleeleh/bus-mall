@@ -8,6 +8,11 @@ let rightElement = document.getElementById('right');
 let counter = 0;
 let maxAttempts = 25;
 let result=document.getElementById('submit');
+let previousIndex=[25,25,25];
+let count=0;
+let productNames = [];
+let productVotes = [];
+let productShown = [];
 
 function ProductImage(productName, source) {
     this.name = productName;
@@ -15,7 +20,10 @@ function ProductImage(productName, source) {
     this.votes = 0;
     this.shown = 0;
     ProductImage.products.push(this);
+    productNames.push(this.name)
+
 }
+
 ProductImage.products = [];
 
 new ProductImage('bag', 'images/bag.jpg');
@@ -45,17 +53,21 @@ function randomIndex() {
 }
 
 function renderThreeImages() {
-    leftIndex = randomIndex();
+    do{leftIndex = randomIndex();}
+    while(leftIndex===previousIndex[0]||leftIndex===previousIndex[1]||leftIndex===previousIndex[2])
 
     do {
         centerIndex = randomIndex();
-    } while (leftIndex === centerIndex)
+    } while (leftIndex === centerIndex||centerIndex===previousIndex[0]||centerIndex===previousIndex[1]||centerIndex===previousIndex[2])
 
-    do { rightIndex = randomIndex() }
-    while (rightIndex === leftIndex || rightIndex === centerIndex)
+    do { rightIndex = randomIndex();
+       
+     }
+    while (rightIndex === leftIndex || rightIndex === centerIndex||rightIndex===previousIndex[0]||rightIndex===previousIndex[1]||rightIndex===previousIndex[2])
     leftElement.src = ProductImage.products[leftIndex].source;
     centerElement.src = ProductImage.products[centerIndex].source;
     rightElement.src = ProductImage.products[rightIndex].source;
+    console.log(previousIndex)
     for(let i=0;i<ProductImage.products.length;i++){
         if(leftIndex==i){
             ProductImage.products[i].shown++
@@ -65,6 +77,10 @@ function renderThreeImages() {
             ProductImage.products[i].shown++;}
 
 }
+previousIndex.pop();
+previousIndex.pop();
+previousIndex.pop();
+previousIndex=[leftIndex,centerIndex,rightIndex];
 }
 renderThreeImages()
 //    console.log(ProductImage.products[leftIndex])
@@ -80,7 +96,7 @@ rightElement.addEventListener('click', handleUserClick);
 function handleUserClick(event) {
     counter++;
 
-    if (counter < maxAttempts) {
+    if (counter <= maxAttempts) {
         if (event.target.id === 'left') {
             ProductImage.products[leftIndex].votes++
 
@@ -93,7 +109,14 @@ function handleUserClick(event) {
              leftElement.removeEventListener('click', handleUserClick);
              centerElement.removeEventListener('click', handleUserClick);
              centerElement.removeEventListener('click', handleUserClick);
-             result.addEventListener('click',submitter);
+            //  result.addEventListener('click',submitter);
+             for (let i = 0; i < ProductImage.products.length; i++) {
+                // 0
+                productVotes.push(ProductImage.products[i].votes);
+          
+                productShown.push(ProductImage.products[i].shown);
+              }
+              drawChart();
              
        
     }
@@ -101,18 +124,62 @@ function handleUserClick(event) {
 }
 
 
-function submitter(event){
-    console.log(event)
-     let emptyPage = document.getElementById('theResult');
-           emptyPage.textContent='';
-    let unorderedList=document.createElement('ul');
-    theResult.appendChild(unorderedList);
-    for(let i=0;i<ProductImage.products.length;i++){
-        let list=document.createElement('li');
-        unorderedList.appendChild(list);
-        list.textContent = ProductImage.products[i].name +  ' had ' + ProductImage.products[i].votes + ' votes, and was seen  ' + ProductImage.products[i].shown+' times .'
+function  drawChart() {
+
+    let ctx = document.getElementById('myChart').getContext('2d');
+  
+    let chart = new Chart(ctx, {
+      // The type of chart we want to create
+      type: 'bar',
+  
+      // The data for our dataset
+      data: {
+        labels: productNames,
+  
+        datasets: [
+  
+  
+          {
+            label: 'products votes',
+            backgroundColor: '#c6a9a3',
+            borderColor: '#c6a9a3',
+            data: productVotes
+          },
+          
+          {
+            label: 'product shown',
+            backgroundColor: '#99bbad',
+            borderColor:'#99bbad',
+            data: productShown
+          },
+     
+  
+        ]
+      },
+      //  
+  
+      // Configuration options go here
+      options: {}
+    });
+    // console.log(chart);
+  
+    // Chart(ctx,{})
+  
+  }
+
+
+// function submitter(event){
+//     console.log(event)
+//      let emptyPage = document.getElementById('theResult');
+//            emptyPage.textContent='';
+//     let unorderedList=document.createElement('ul');
+//     theResult.appendChild(unorderedList);
+//     for(let i=0;i<ProductImage.products.length;i++){
+//         let list=document.createElement('li');
+//         unorderedList.appendChild(list);
+//         list.textContent = ProductImage.products[i].name +  ' had ' + ProductImage.products[i].votes + ' votes, and was seen  ' + ProductImage.products[i].shown+' times .'
       
-      } }
+//       } }
 
 
 
